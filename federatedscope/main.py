@@ -1,5 +1,10 @@
 import os
 import sys
+import torch
+
+import habana_frameworks.torch.core as htcore
+device = torch.device("hpu")
+
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 DEV_MODE = False  # simplify the federatedscope re-setup everytime we change
