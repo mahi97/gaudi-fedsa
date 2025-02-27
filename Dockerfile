@@ -21,6 +21,8 @@ RUN chmod +x /workspace/setup_env.sh
 RUN pip install -e .'[llm]'
 # Run the setup environment script
 RUN /workspace/setup_env.sh
+RUN git config --global --add safe.directory /workspace
+ENV WANDB_API_KEY=$WANDB_API_KEY
 
 # Set the entrypoint to Python
 ENTRYPOINT ["python3"]
