@@ -57,6 +57,7 @@ llm_requires = [
     'peft==0.12.0',
     'sentencepiece==0.1.99',
     'datasets==2.20.0',
+    'evaluate',
 ]
 
 benchmark_hpo_requires = [
