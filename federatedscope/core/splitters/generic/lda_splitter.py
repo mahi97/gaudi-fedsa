@@ -20,6 +20,31 @@ class LDASplitter(BaseSplitter):
 
     def __call__(self, dataset, prior=None, **kwargs):
         from torch.utils.data import Dataset, Subset
+        
+        # Check if it's a HuggingFace dataset
+        is_hf_dataset = hasattr(dataset, 'features') and hasattr(dataset, 'format')
+        
+        if is_hf_dataset:
+            # For HuggingFace datasets, convert to pandas first to safely extract labels
+            df = dataset.to_pandas()
+            if 'label' in df.columns:
+                label = df['label'].values
+            elif 'categories' in df.columns:
+                label = df['categories'].values
+            else:
+                raise ValueError('Cannot find label or categories in dataset')
+                
+            # Create index slices for data partitioning
+            idx_slice = dirichlet_distribution_noniid_slice(label,
+                                                            self.client_num,
+                                                            self.alpha,
+                                                            prior=prior)
+            
+            # Create subsets using HuggingFace's select method
+            data_list = [dataset.select(idxs) for idxs in idx_slice]
+            return data_list
+        
+        # Original code path for non-HuggingFace datasets
         tmp_dataset = [ds for ds in dataset]
         if isinstance(tmp_dataset[0], tuple):
             label = np.array([y for x, y in tmp_dataset])
