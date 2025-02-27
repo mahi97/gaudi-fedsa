@@ -219,7 +219,8 @@ def generate_emulator_and_adapter(model: AdapterModel,
     new_model = set_layers(new_model, new_emulator_and_adapter, emu_l, emu_r)
 
     gc.collect()
-    torch.cuda.empty_cache()
+    # MAHI TODO: check if this is necessary for HPU
+    # torch.cuda.empty_cache()
 
     return new_model
 

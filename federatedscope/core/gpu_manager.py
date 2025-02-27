@@ -63,7 +63,7 @@ class GPUManager():
             return 'cpu'
         elif self.specified_device >= 0:
             # allow users to specify the device
-            return 'cuda:{}'.format(self.specified_device)
+            return 'hpu:{}'.format(self.specified_device)
         else:
             for old_infos, new_infos in zip(self.gpus, self._query_gpus()):
                 old_infos.update(new_infos)
@@ -79,7 +79,7 @@ class GPUManager():
             chosen_gpu = self._sort_by_memory(unallocated_gpus, True)[0]
             chosen_gpu['allocated'] = True
             index = chosen_gpu['index']
-            return 'cuda:{:s}'.format(index)
+            return 'hpu:{:s}'.format(index)
 
 
 # for testing

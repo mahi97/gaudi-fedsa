@@ -220,12 +220,12 @@ def assert_fl_setting_cfg(cfg):
         cfg.federate.process_num = 1
         logger.warning('Parallel training can only be used in standalone mode'
                        ', thus cfg.federate.process_num is modified to 1')
-    if cfg.federate.process_num > 1 and not torch.cuda.is_available():
+    if cfg.federate.process_num > 1 and not torch.hpu.is_available():
         cfg.federate.process_num = 1
         logger.warning(
             'No GPU found for your device, set cfg.federate.process_num=1')
-    if torch.cuda.device_count() < cfg.federate.process_num:
-        cfg.federate.process_num = torch.cuda.device_count()
+    if torch.hpu.device_count() < cfg.federate.process_num:
+        cfg.federate.process_num = torch.hpu.device_count()
         logger.warning(
             'We found the number of gpu is insufficient, '
             f'thus cfg.federate.process_num={cfg.federate.process_num}')

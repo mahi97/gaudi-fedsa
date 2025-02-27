@@ -54,7 +54,7 @@ class FSChatBot(object):
                                           config.llm.tok_len, model_hub)
         self.model = get_llm(config)
 
-        self.device = f'cuda:{config.device}'
+        self.device = f'hpu:{config.device}'
         self.add_special_tokens = True
 
         if config.llm.offsite_tuning.use:
@@ -190,7 +190,7 @@ class FSChatBot_My(FSChatBot):
         self.tokenizer, _ = get_tokenizer(model_name, config.data.root,
                                           config.llm.tok_len, model_hub)
         # self.model = get_llm(config)
-        self.device = f'cuda:{config.eval_device}'
+        self.device = f'hpu:{config.eval_device}'
         self.model = copy.deepcopy(model).to(self.device)   # direct copy, not lodading from ckpt
         
         self.add_special_tokens = True

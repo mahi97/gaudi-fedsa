@@ -170,7 +170,7 @@ class StandaloneMultiGPURunner(StandaloneRunner):
 class Runner(object):
     def __init__(self, rank):
         self.rank = rank
-        self.device = torch.device("cuda:{}".format(rank))
+        self.device = torch.device("hpu:{}".format(rank))
 
     def setup(self):
         raise NotImplementedError

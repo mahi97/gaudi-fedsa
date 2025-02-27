@@ -92,9 +92,17 @@ def main():
         )
         try:
             model_completions = fschatbot.generate(input_text, generate_kwargs)
-        except torch.cuda.OutOfMemoryError as error:
-            print(error)
-            model_completions = ['' for _ in range(NUM_ANSWERS_PER_QUESTION)]
+
+        except RuntimeError as e:
+            if "out of memory" in str(e).lower():
+                print("HPU memory exhausted")
+            else:
+                raise
+        # MAHI TODO: handle OOM error for HPU better
+        
+        # except torch.cuda.OutOfMemoryError as error:
+        #     print(error)
+        #     model_completions = ['' for _ in range(NUM_ANSWERS_PER_QUESTION)]
 
         for i, completion in enumerate(model_completions):
             completion = clean_answer(completion)
