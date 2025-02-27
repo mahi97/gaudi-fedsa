@@ -3,20 +3,23 @@ device: 0
 early_stop:
   patience: 0
 federate:
+  freeze_A: False
   mode: standalone
   client_num: 3
   total_round_num: 1000
   save_to: "fedsa-lora_mnli-m.ckpt"
-  share_local_model: True
+  share_local_model: False
   online_aggr: False
+  process_num: 4
+personalization: 
+  local_param: ['lora_B', 'classifier']
 data:
   root: data/
   type: 'mnli@glue'
+  matched: True
   splitter: 'lda'
+  splits: [0.8, 0.1, 0.1]
   splitter_args: [{'alpha': 0.5}]
-  splits: [0.7, 0.15, 0.15]
-  server_holds_all: False
-  consistent_label_distribution: True
 llm:
   tok_len: 128
   adapter:
@@ -24,9 +27,6 @@ llm:
     args: [ { 'adapter_package': 'peft', 'adapter_method': 'lora', 'r': 8, 'lora_alpha': 16, 'lora_dropout': 0.05 } ]
 dataloader:
   batch_size: 128
-  drop_last: False
-  shuffle: True
-  num_workers: 0
 model:
   type: 'FacebookAI/roberta-large@huggingface_llm'
 train:
@@ -34,6 +34,7 @@ train:
   batch_or_epoch: batch
   optimizer:
     lr: 2e-2
+  is_enable_half: True
 criterion:
   type: CrossEntropyLoss
 trainer:
@@ -43,8 +44,6 @@ eval:
   metrics: ['accuracy']
   count_flops: False
   best_res_update_round_wise_key: 'val_accuracy'
-  split: ['train', 'val', 'test']
-  report: ['weighted_avg', 'avg', 'raw']
 wandb:
   use: True
   name_user: 'mahi97'
