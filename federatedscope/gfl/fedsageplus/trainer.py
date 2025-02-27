@@ -3,6 +3,11 @@ import copy
 import numpy as np
 import torch.nn.functional as F
 
+try:
+    import habana_frameworks.torch.core as htcore
+except ImportError:
+    htcore = None
+
 from federatedscope.gfl.loss import GreedyLoss
 from federatedscope.gfl.trainer.nodetrainer import NodeFullBatchTrainer
 
@@ -80,6 +85,8 @@ class FedGenTrainer(LocalGenTrainer):
         for key, value in self.ctx.model.named_parameters():
             value.grad += grads[key]
         self.ctx.optimizer.step()
+        if htcore is not None:
+            htcore.mark_step()
         return self.ctx.model.cpu().state_dict()
 
     def cal_grad(self, raw_data, model_para, embedding, true_missing):
@@ -133,6 +140,8 @@ class FedGenTrainer(LocalGenTrainer):
         loss = self.cfg.fedsageplus.b * loss_feat
         loss = (1.0 / self.cfg.federate.client_num * loss).requires_grad_()
         loss.backward()
+        if htcore is not None:
+            htcore.mark_step()
         grads = {
             key: value.grad
             for key, value in self.ctx.model.named_parameters()

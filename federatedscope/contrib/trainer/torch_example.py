@@ -1,6 +1,11 @@
 from federatedscope.register import register_trainer
 from federatedscope.core.trainers import BaseTrainer
 
+try:
+    import habana_frameworks.torch.core as htcore
+except ImportError:
+    htcore = None
+
 # An example for converting torch training process to FS training process
 
 # Refer to `federatedscope.core.trainers.BaseTrainer` for interface.
@@ -48,6 +53,8 @@ class MyTorchTrainer(BaseTrainer):
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
+            if htcore is not None:
+                htcore.mark_step()
 
             # _hook_on_batch_end
             total_loss += loss.item() * y.shape[0]

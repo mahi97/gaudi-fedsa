@@ -1,5 +1,10 @@
 import torch
 
+try:
+    import habana_frameworks.torch.core as htcore
+except ImportError:
+    htcore = None
+
 from federatedscope.core.aggregators import ClientsAvgAggregator
 from federatedscope.core.auxiliaries.optimizer_builder import get_optimizer
 
@@ -38,6 +43,8 @@ class FedOptAggregator(ClientsAvgAggregator):
             if key in new_model.keys():
                 p.grad = grads[key]
         self.optimizer.step()
+        if htcore is not None:
+            htcore.mark_step()
         if self._annealing:
             self.scheduler.step()
 

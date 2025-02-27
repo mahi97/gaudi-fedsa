@@ -4,6 +4,11 @@ from copy import deepcopy
 from federatedscope.attack.auxiliary.utils import get_generator
 import matplotlib.pyplot as plt
 
+try:
+    import habana_frameworks.torch.core as htcore
+except ImportError:
+    htcore = None
+
 
 class GANCRA():
     '''
@@ -118,6 +123,8 @@ class GANCRA():
             generator_loss = self.generator_loss(discriminator_output)
 
             generator_loss.backward()
+            if htcore is not None:
+                htcore.mark_step()
             return generator_loss
 
         return closure

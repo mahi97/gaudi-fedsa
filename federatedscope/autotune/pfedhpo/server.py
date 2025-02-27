@@ -5,6 +5,11 @@ import torch.nn
 import yaml
 from torch.nn import functional as F
 
+try:
+    import habana_frameworks.torch.core as htcore
+except ImportError:
+    htcore = None
+
 from federatedscope.core.message import Message
 from federatedscope.core.workers import Server
 from federatedscope.autotune.pfedhpo.utils import *
@@ -293,6 +298,8 @@ class pFedHPOServer(Server):
         loss.backward()
         nn.utils.clip_grad_norm_(self.opt_params, max_norm=10, norm_type=2)
         self.opt.step()
+        if htcore is not None:
+            htcore.mark_step()
 
     def check_and_move_on(self,
                           check_eval_result=False,

@@ -9,6 +9,11 @@ from numpy.linalg import norm
 from scipy.special import logsumexp
 import torch
 
+try:
+    import habana_frameworks.torch.core as htcore
+except ImportError:
+    htcore = None
+
 from federatedscope.core.message import Message
 from federatedscope.core.workers import Server
 from federatedscope.core.auxiliaries.utils import merge_dict_of_results
@@ -314,6 +319,8 @@ class FedExServer(Server):
             pg_loss = -1.0 * pg_obj
             pg_loss.backward()
             self._pn_optimizer.step()
+            if htcore is not None:
+                htcore.mark_step()
             self._policy_net.eval()
             thetas4stat = [
                 theta.detach().cpu().numpy()

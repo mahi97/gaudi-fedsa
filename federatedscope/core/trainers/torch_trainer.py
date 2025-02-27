@@ -5,10 +5,12 @@ import numpy as np
 try:
     import torch
     from torch.utils.data import DataLoader, Dataset
+    import habana_frameworks.torch.core as htcore
 except ImportError:
     torch = None
     DataLoader = None
     Dataset = None
+    htcore = None
 
 from federatedscope.core.trainers.enums import MODE, LIFECYCLE
 from federatedscope.core.trainers.trainer import Trainer
@@ -396,6 +398,8 @@ class GeneralTorchTrainer(Trainer):
                                            ctx.grad_clip)
 
         ctx.optimizer.step()
+        if htcore is not None:
+            htcore.mark_step()
         if ctx.scheduler is not None:
             ctx.scheduler.step()
 

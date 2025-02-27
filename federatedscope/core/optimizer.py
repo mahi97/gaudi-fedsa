@@ -1,6 +1,10 @@
 import copy
 from typing import Dict, List
 
+try:
+    import habana_frameworks.torch.core as htcore
+except ImportError:
+    htcore = None
 
 def wrap_regularized_optimizer(base_optimizer, regular_weight):
     base_optimizer_type = type(base_optimizer)
@@ -55,5 +59,7 @@ def wrap_regularized_optimizer(base_optimizer, regular_weight):
         def step(self):
             self.regularize_by_para_diff()  # key action
             self.optimizer.step()
+            if htcore is not None:
+                htcore.mark_step()
 
     return ParaRegularOptimizer(internal_base_optimizer, regular_weight)

@@ -3,6 +3,11 @@ from collections import defaultdict
 
 import torch
 
+try:
+    import habana_frameworks.torch.core as htcore
+except ImportError:
+    htcore = None
+
 from federatedscope.core.trainers import BaseTrainer
 from federatedscope.core.auxiliaries.optimizer_builder import get_optimizer
 
@@ -86,6 +91,8 @@ class LocalEntropyTrainer(BaseTrainer):
                                                        current_global_model)
             loss.backward()
             optimizer.step()
+            if htcore is not None:
+                htcore.mark_step()
 
             # add noise for langevin dynamics
             add_noise(

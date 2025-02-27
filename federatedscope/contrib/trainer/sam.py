@@ -7,6 +7,11 @@
 from collections import defaultdict
 import torch
 
+try:
+    import habana_frameworks.torch.core as htcore
+except ImportError:
+    htcore = None
+
 from federatedscope.core.trainers import BaseTrainer
 from federatedscope.core.auxiliaries.optimizer_builder import get_optimizer
 
@@ -131,11 +136,17 @@ class SAMTrainer(BaseTrainer):
             outputs = self.model(inputs)
             loss = criterion(outputs, targets)
             loss.backward()
+            if htcore is not None:
+                htcore.mark_step()
             minimizer.ascent_step()
 
             # Descent Step
             criterion(self.model(inputs), targets).backward()
+            if htcore is not None:
+                htcore.mark_step()
             minimizer.descent_step()
+            if htcore is not None:
+                htcore.mark_step()
 
             with torch.no_grad():
                 running_loss += targets.shape[0] * loss.item()
