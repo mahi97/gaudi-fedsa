@@ -404,4 +404,3 @@ class ClientRunner(Runner):
                     download_bytes)
         if msg.msg_type == 'finish':
             self.is_finish = True
-``` 
