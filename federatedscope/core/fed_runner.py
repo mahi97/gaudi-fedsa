@@ -7,7 +7,7 @@ import heapq
 import numpy as np
 
 from federatedscope.core.workers import Server, Client
-from federatedscope.core.gpu_manager import GPUManager
+from federatedscope.core.hpu_manager import HPUManager
 from federatedscope.core.auxiliaries.model_builder import get_model
 from federatedscope.core.auxiliaries.utils import get_resource_info, \
     get_ds_rank
@@ -42,7 +42,7 @@ class BaseRunner(object):
         cfg : The configurations of the FL course.
         client_cfgs: The clients' configurations.
         mode: The run mode for FL, ``distributed`` or ``standalone``
-        gpu_manager: manager of GPU resource
+        hpu_manager: manager of GPU resource
         resource_info: information of resource
     """
     def __init__(self,
@@ -63,7 +63,7 @@ class BaseRunner(object):
         self.serial_num_for_msg = 0
 
         self.mode = self.cfg.federate.mode.lower()
-        self.gpu_manager = GPUManager(gpu_available=self.cfg.use_gpu,
+        self.hpu_manager = HPUManager(hpu_available=self.cfg.use_gpu,
                                       specified_device=self.cfg.device)
 
         self.unseen_clients_id = []
@@ -154,7 +154,7 @@ class BaseRunner(object):
         self.server_id = 0
         server_data, model, kw = self._get_server_args(resource_info,
                                                        client_resource_info)
-        self._server_device = self.gpu_manager.auto_choice()
+        self._server_device = self.hpu_manager.auto_choice()
         server = self.server_class(
             ID=self.server_id,
             config=self.cfg,
@@ -205,7 +205,7 @@ class BaseRunner(object):
             client_specific_config.freeze()
         client_device = self._server_device if \
             self.cfg.federate.share_local_model else \
-            self.gpu_manager.auto_choice()
+            self.hpu_manager.auto_choice()
         client = self.client_class(
             ID=client_id,
             server_id=self.server_id,
@@ -602,7 +602,7 @@ class FedRunner(object):
         self.client_cfgs = client_configs
 
         self.mode = self.cfg.federate.mode.lower()
-        self.gpu_manager = GPUManager(gpu_available=self.cfg.use_gpu,
+        self.hpu_manager = HPUManager(hpu_available=self.cfg.use_gpu,
                                       specified_device=self.cfg.device)
 
         self.unseen_clients_id = []
@@ -858,7 +858,7 @@ class FedRunner(object):
                 self.cfg.mode.type))
 
         if self.server_class:
-            self._server_device = self.gpu_manager.auto_choice()
+            self._server_device = self.hpu_manager.auto_choice()
             server = self.server_class(
                 ID=self.server_id,
                 config=self.cfg,
@@ -916,7 +916,7 @@ class FedRunner(object):
                 client_specific_config.freeze()
             client_device = self._server_device if \
                 self.cfg.federate.share_local_model else \
-                self.gpu_manager.auto_choice()
+                self.hpu_manager.auto_choice()
             client = self.client_class(ID=client_id,
                                        server_id=self.server_id,
                                        config=client_specific_config,

@@ -11,7 +11,7 @@ import torch
 import numpy as np
 from tqdm import tqdm
 from federatedscope.core.data.utils import download_url
-from federatedscope.core.gpu_manager import GPUManager
+from federatedscope.core.hpu_manager import HPUManager
 from federatedscope.nlp.hetero_tasks.model.model import ATCModel
 
 logger = logging.getLogger(__name__)
@@ -163,8 +163,8 @@ class HeteroNLPDataLoader(object):
 class SynthDataProcessor(object):
     def __init__(self, config, datasets):
         self.cfg = config
-        self.device = GPUManager(
-            gpu_available=self.cfg.use_gpu,
+        self.device = HPUManager(
+            hpu_available=self.cfg.use_gpu,
             specified_device=self.cfg.device).auto_choice()
         self.pretrain_dir = config.federate.atc_load_from
         self.cache_dir = 'cache_debug' if \
