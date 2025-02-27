@@ -1,5 +1,4 @@
 use_gpu: True
-eager: False
 device: 0
 eval_device: 1
 early_stop:
