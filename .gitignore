@@ -1,0 +1,9 @@
+/.locks
+data/
+exp/
+*/__pycache__/*
+**/__pycache__/**
+federatedscope.egg-info/
+**/__pycache__/
+*/__pycache__/
+models--*
