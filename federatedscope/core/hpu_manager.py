@@ -85,6 +85,6 @@ class HPUManager():
 # for testing
 if __name__ == '__main__':
 
-    hpu_manager = HPUManager(gpu_available=True, specified_device=0)
+    hpu_manager = HPUManager(hpu_available=True, specified_device=0)
     for i in range(20):
         print(hpu_manager.auto_choice())
