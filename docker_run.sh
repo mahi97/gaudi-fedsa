@@ -20,6 +20,25 @@ get_last_dir_name() {
     echo "$(basename "$1")"
 }
 
+# Variable to track eager mode
+EAGER_MODE=false
+
+# Parse arguments for --eager flag
+for arg in "$@"; do
+  if [ "$arg" == "--eager" ]; then
+    EAGER_MODE=true
+    # Remove --eager from the arguments
+    set -- "${@/--eager/}"
+    # Clean up empty arguments
+    args=()
+    for i in "$@"; do
+      [ -n "$i" ] && args+=("$i")
+    done
+    set -- "${args[@]}"
+    break
+  fi
+done
+
 # If a source folder is provided, mount it
 if [ -n "$SRC_FOLDER" ]; then
   SRC_DIR_NAME=$(get_last_dir_name "$SRC_FOLDER")
@@ -36,6 +55,14 @@ else
   DATASET_MOUNT=""
 fi
 
+# Set environment variables for Docker
+ENV_VARS="-e HABANA_VISIBLE_DEVICES=all -e OMPI_MCA_btl_vader_single_copy_mechanism=none -e HUGGINGFACE_HUB_TOKEN=$HUGGINGFACE_HUB_TOKEN"
+# Add eager mode environment variable if enabled
+if [ "$EAGER_MODE" = true ]; then
+  ENV_VARS="$ENV_VARS -e PT_HPU_LAZY_MODE=0"
+  echo "Running in eager mode (PT_HPU_LAZY_MODE=0)"
+fi
+
 # Check if the image name is "base" and run vault.habana.ai/gaudi-docker/1.17.0/ubuntu22.04/habanalabs/pytorch-installer-2.3.1:latest
 if [ "$IMAGE_NAME" == "base" ]; then
   IMAGE_NAME="vault.habana.ai/gaudi-docker/1.17.0/ubuntu22.04/habanalabs/pytorch-installer-2.3.1:latest"
@@ -45,8 +72,7 @@ fi
 if [ -z "$SCRIPT_NAME" ]; then
   echo "No script provided. Starting the Docker container in interactive bash mode..."
   sudo docker run -it --runtime=habana \
-  -e HABANA_VISIBLE_DEVICES=all \
-  -e OMPI_MCA_btl_vader_single_copy_mechanism=none \
+  $ENV_VARS \
   --cap-add=sys_nice --net=host --ipc=host \
   --entrypoint /bin/bash \
   $SRC_MOUNT $DATASET_MOUNT \
@@ -65,8 +91,7 @@ else
   if [[ "$SCRIPT_NAME" == *.py ]]; then
     echo "Running Python script '$SCRIPT_NAME' with arguments: $SCRIPT_ARGS"
     sudo docker run -it --runtime=habana \
-    -e HABANA_VISIBLE_DEVICES=all \
-    -e OMPI_MCA_btl_vader_single_copy_mechanism=none \
+    $ENV_VARS \
     --cap-add=sys_nice --net=host --ipc=host \
     $SRC_MOUNT $DATASET_MOUNT \
     $IMAGE_NAME \
@@ -75,8 +100,7 @@ else
     # Run the Docker container with the specified script
     echo "Running the script '$SCRIPT_NAME' with arguments: $SCRIPT_ARGS"
     sudo docker run -it --runtime=habana \
-    -e HABANA_VISIBLE_DEVICES=all \
-    -e OMPI_MCA_btl_vader_single_copy_mechanism=none \
+    $ENV_VARS \
     --cap-add=sys_nice --net=host --ipc=host \
     $SRC_MOUNT $DATASET_MOUNT \
     $IMAGE_NAME \
