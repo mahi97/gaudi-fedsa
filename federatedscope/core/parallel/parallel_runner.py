@@ -4,10 +4,16 @@ import os
 import copy
 import heapq
 
+
+
 import numpy as np
 import torch
 import torch.multiprocessing as mp
 import torch.distributed as dist
+
+import habana_frameworks.torch.distributed.hccl as hccl
+
+
 
 from federatedscope.core.fed_runner import StandaloneRunner
 from federatedscope.core.auxiliaries.model_builder import get_model
@@ -90,7 +96,10 @@ def run(rank, world_size, master_addr, master_port, runner):
     logger.info("Process {} start to run".format(rank))
     os.environ['MASTER_ADDR'] = master_addr
     os.environ['MASTER_PORT'] = str(master_port)
-    dist.init_process_group('nccl', rank=rank, world_size=world_size)
+    # dist.init_process_group('nccl', rank=rank, world_size=world_size)
+    _, _, local_rank = hccl.initialize_distributed_hpu()
+    hccl.initialize_distributed_hpu(world_size=world_size, rank=rank, local_rank=local_rank)
+    torch.distributed.init_process_group(backend='hccl')
     # server process
     runner.setup()
     runner.run()
