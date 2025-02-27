@@ -37,3 +37,9 @@ trainer:
 eval:
   freq: 10
   metrics: ['acc', 'correct']
+wandb:
+  use: True
+  name_user: 'mahi97'
+  name_project: 'gaudi-fs'
+  online_track: True
+  client_train_info: True
