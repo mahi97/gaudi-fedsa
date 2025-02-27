@@ -230,7 +230,6 @@ def logline_2_wandb_dict(exp_stop_normal, line, log_res_best, raw_out):
         if raw_out:
             line = line.split("INFO: ")[1]
         res = line.replace("\'", "\"")
-        res = res.replace("nan", "0.0")
         res = json.loads(s=res)
         # pre-process the roles
         cur_round = res['Round']
