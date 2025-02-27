@@ -6,7 +6,7 @@ early_stop:
 federate:
   freeze_A: False
   mode: standalone
-  client_num: 3
+  client_num: 8
   process_num: 8
   total_round_num: 100
   save_to: "llama_gsm8k_3_fedsa-lora.ckpt"
