@@ -142,8 +142,12 @@ class GLUETrainer(GeneralTorchTrainer):
         ctx.loss_batch_total += ctx.loss_batch.item() * ctx.batch_size
         ctx.loss_regular_total += float(ctx.get("loss_regular", 0.))
         # cache label for evaluate, use extend not append
-        ctx.ys_true.extend(ctx.y_true.detach().cpu().numpy())
-        ctx.ys_pred.extend(ctx.y_pred.detach().cpu().numpy())
+        ctx.ys_true.extend(ctx.y_true.to('cpu').detach().numpy())
+        ctx.ys_pred.extend(ctx.y_pred.to('cpu').detach().numpy())
+        
+        
+        # ctx.ys_true.extend(ctx.y_true.detach().cpu().numpy())
+        # ctx.ys_pred.extend(ctx.y_pred.detach().cpu().numpy())
         
     def _hook_on_fit_end(self, ctx):
         avg_loss = 0 if float(
