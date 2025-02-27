@@ -56,7 +56,7 @@ else
 fi
 
 # Set environment variables for Docker
-ENV_VARS="-e HABANA_VISIBLE_DEVICES=all -e OMPI_MCA_btl_vader_single_copy_mechanism=none -e HUGGINGFACE_HUB_TOKEN=$HUGGINGFACE_HUB_TOKEN -e WANDB_API_KEY=$WANDB_API_KEY"
+ENV_VARS="-e HABANA_VISIBLE_DEVICES=all -e OMPI_MCA_btl_vader_single_copy_mechanism=none -e HF_TOKEN=$HUGGINGFACE_HUB_TOKEN -e WANDB_API_KEY=$WANDB_API_KEY"
 # Add eager mode environment variable if enabled
 if [ "$EAGER_MODE" = true ]; then
   ENV_VARS="$ENV_VARS -e PT_HPU_LAZY_MODE=0"
