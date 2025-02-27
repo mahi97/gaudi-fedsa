@@ -17,6 +17,7 @@ data:
   type: 'mnli@glue'
   matched: True
   splitter: 'lda'
+  splits: [0.8, 0.1, 0.1]
   splitter_args: [{'alpha': 0.5}]
 llm:
   tok_len: 128
