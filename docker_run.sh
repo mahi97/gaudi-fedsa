@@ -70,7 +70,7 @@ else
     --cap-add=sys_nice --net=host --ipc=host \
     $SRC_MOUNT $DATASET_MOUNT \
     $IMAGE_NAME \
-    python /$ROOT_NAME/$SRC_DIR_NAME/$SCRIPT_NAME $SCRIPT_ARGS
+    /$ROOT_NAME/$SRC_DIR_NAME/$SCRIPT_NAME $SCRIPT_ARGS
   else
     # Run the Docker container with the specified script
     echo "Running the script '$SCRIPT_NAME' with arguments: $SCRIPT_ARGS"
