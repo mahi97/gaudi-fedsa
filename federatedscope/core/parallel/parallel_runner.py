@@ -33,7 +33,11 @@ def recv_mode_para(model_para, src_rank):
 def setup_multigpu_runner(cfg, server_class, client_class, unseen_clients_id,
                           server_resource_info, client_resource_info):
     processes = []
-    mp.set_start_method("spawn")
+    try:
+        mp.set_start_method("spawn")
+    except RuntimeError:
+        # Context already set, ignore the error
+        pass
 
     # init parameter
     client2server_queue = mp.Queue()
@@ -400,3 +404,4 @@ class ClientRunner(Runner):
                     download_bytes)
         if msg.msg_type == 'finish':
             self.is_finish = True
+``` 
