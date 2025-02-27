@@ -1,7 +1,7 @@
 import os
 
 
-def check_gpus():
+def check_hpus():
     if not 'HABANALABS AIPs' in os.popen('hl-smi -h').read():
         print("'hl-smi' tool not found.")
         return False
@@ -17,7 +17,7 @@ class HPUManager():
     https://github.com/QuantumLiu/tf_gpu_manager
     """
     def __init__(self, hpu_available=False, specified_device=-1):
-        self.hpu_avaiable = hpu_available and check_gpus()
+        self.hpu_avaiable = hpu_available and check_hpus()
         self.specified_device = specified_device
         if self.hpu_avaiable:
             self.hpus = self._query_hpus()
@@ -59,26 +59,26 @@ class HPUManager():
         """
         To allocate a device
         """
-        if self.gpus is None:
+        if self.hpus is None:
             return 'cpu'
         elif self.specified_device >= 0:
             # allow users to specify the device
             return 'hpu:{}'.format(self.specified_device)
         else:
-            for old_infos, new_infos in zip(self.gpus, self._query_gpus()):
+            for old_infos, new_infos in zip(self.hpus, self._query_hpus()):
                 old_infos.update(new_infos)
-            unallocated_gpus = [
-                gpu for gpu in self.gpus if not gpu['allocated']
+            unallocated_hpus = [
+                hpu for hpu in self.hpus if not hpu['allocated']
             ]
-            if len(unallocated_gpus) == 0:
-                # reset when all gpus have been allocated
-                unallocated_gpus = self.gpus
-                for gpu in self.gpus:
-                    gpu['allocated'] = False
+            if len(unallocated_hpus) == 0:
+                # reset when all hpus have been allocated
+                unallocated_hpus = self.hpus
+                for hpu in self.hpus:
+                    hpu['allocated'] = False
 
-            chosen_gpu = self._sort_by_memory(unallocated_gpus, True)[0]
-            chosen_gpu['allocated'] = True
-            index = chosen_gpu['index']
+            chosen_hpu = self._sort_by_memory(unallocated_hpus, True)[0]
+            chosen_hpu['allocated'] = True
+            index = chosen_hpu['index']
             return 'hpu:{:s}'.format(index)
 
 
