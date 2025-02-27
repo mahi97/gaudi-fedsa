@@ -16,6 +16,8 @@ from federatedscope.core.auxiliaries.scheduler_builder import get_scheduler
 from federatedscope.glue.model.adapter_builder import AdapterModel
 from datasets import load_metric
 import numpy as np
+import evaluate
+
 
 import habana_frameworks.torch.core as htcore
  
@@ -162,8 +164,8 @@ class GLUETrainer(GeneralTorchTrainer):
                 f'{ctx.cur_split}_total': ctx.num_samples,
                 f'{ctx.cur_split}_avg_loss': avg_loss
         }
-        # added by me, for GLUE
-        glue_metric = load_metric('glue', ctx.cfg.data.type.split('@')[0], trust_remote_code=True)
+        # Updated: using evaluate.load instead of load_metric
+        glue_metric = evaluate.load('glue', ctx.cfg.data.type.split('@')[0], trust_remote_code=True)
         eval_metric = glue_metric.compute(predictions=ctx.ys_pred, references=ctx.ys_true)
         for k, v in eval_metric.items():
             eval_results[f'{ctx.cur_split}_{k}'] = v
