@@ -7,6 +7,7 @@ federate:
   freeze_A: False
   mode: standalone
   client_num: 3
+  process_num: 8
   total_round_num: 100
   save_to: "llama_gsm8k_3_fedsa-lora.ckpt"
   save_freq: 100

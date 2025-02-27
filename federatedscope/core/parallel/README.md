@@ -32,7 +32,7 @@ federate:
 ## Use cases
 
 Here we give an example to demonstrate the efficiency of `StandaloneMultiGPURunner` compared to `StandaloneRunner`. The configuration file and experiment result are listed below.
-The experiment result shows that the totoal running time of `StandaloneMultiGPURunner` is only 1/3 of `StandaloneRunner` in the case of 8 GPUs.
+The experiment result shows that the total running time of `StandaloneMultiGPURunner` is only 1/3 of `StandaloneRunner` in the case of 8 GPUs.
 
 ```yaml
 use_gpu: True
