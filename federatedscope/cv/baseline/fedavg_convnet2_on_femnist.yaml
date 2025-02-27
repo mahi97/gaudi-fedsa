@@ -40,4 +40,4 @@ wandb:
   name_user: 'mahi97'
   name_project: 'gaudi-fs'
   online_track: True
-  client_train_info: True
+  client_train_info: False
