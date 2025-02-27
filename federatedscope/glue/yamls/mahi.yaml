@@ -42,12 +42,6 @@ eval:
   metrics: ['accuracy']
   count_flops: False
   best_res_update_round_wise_key: 'val_accuracy'
-
-# wandb.use 	(bool) False 	Whether to use wandb to track and visualize the FL dynamics and results. 	If False, all the related configurations (wandb.xxx) would not take effect.
-# wandb.name_user 	(str) '' 	the user name used in wandb management 	-
-# wandb.name_project 	(str) '' 	the project name used in wandb management 	-
-# wandb.online_track 	(bool) True 	whether to track the results in an online manner, i.e., log results at every evaluation round 	-
-# wandb.client_train_info 	(bool) True 	whether to track the training info of clients 	-
 wandb:
   use: True
   name_user: 'mahi97'

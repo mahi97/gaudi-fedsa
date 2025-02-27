@@ -17,6 +17,9 @@ from federatedscope.glue.model.adapter_builder import AdapterModel
 from datasets import load_metric
 import numpy as np
 
+import habana_frameworks.torch.core as htcore
+ 
+
 logger = logging.getLogger(__name__)
 
 
@@ -118,7 +121,7 @@ class GLUETrainer(GeneralTorchTrainer):
         else:
             ctx.optimizer.zero_grad()
             ctx.loss_task.backward()
-
+            htcore.mark_step()
             if ctx.grad_clip > 0:
                 torch.nn.utils.clip_grad_norm_(ctx.model.parameters(),
                                                ctx.grad_clip)
@@ -126,6 +129,7 @@ class GLUETrainer(GeneralTorchTrainer):
             ctx.optimizer.step()
         if ctx.scheduler is not None:
             ctx.scheduler.step()
+        htcore.mark_step()
 
     def _hook_on_batch_end(self, ctx):
         if ctx.skip_this_batch:
